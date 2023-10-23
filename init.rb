@@ -2,6 +2,7 @@ Redmine::Plugin.register :redmine_html5_video do
   name 'Html5 video macros'
   description 'Embeds video URLs. Usage (as macro): video(ID|URL|YOUTUBE_URL)'
   version '0.1'
+  author 'Aganov D.'
   url 'https://github.com/daganov/redmine_html5_video.git'
   author_url 'https://github.com/daganov/redmine_html5_video.git'
 end
@@ -39,22 +40,21 @@ Redmine::WikiFormatting::Macros.register do
                 end
                 video_url = "https://www.youtube.com/embed/#{$LAST_MATCH_INFO['youtubeID']}#{yt_params}"
                 embed_typ = "iframe"
-        # check for vimeo-URL...
-        when /^https?:\/\/(www\.)?vimeo\.com\/(?<vimeoID>[\d]*)((\D)[\w\d\=\-]*)*$/
-                # hiding video-controls not possible at vimeo.com
-                video_url = "https://player.vimeo.com/video/#{$LAST_MATCH_INFO['vimeoID']}"
-                embed_typ = "iframe"
         else
                 # Currently, there are 3 supported video formats for the <video> element: MP4, WebM, and Ogg
                 # http://www.w3schools.com/tags/tag_video.asp
-                # Check also http://www.html5rocks.com/en/tutorials/video/basics/
                 video_url = file_url
                 embed_typ = "video"
                 case file_url
                 when /^https?:\/\/(.*\/)?(?<video_name>.*)\.(?<video_format>mp4|ogg|webm)(\?.*)?$/
                         mime_type = "video/#{$LAST_MATCH_INFO['video_format']}"
                 else
-                        video_url = "unknown filetype: #{$LAST_MATCH_INFO['video_format']}"
+                        if $LAST_MATCH_INFO == nil
+                                video_url = "broken video url"
+                                return video_url
+                        else
+                                video_url = "unknown filetype: #{$LAST_MATCH_INFO['video_format']}"
+                        end
                 end
         end
 
