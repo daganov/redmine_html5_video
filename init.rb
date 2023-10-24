@@ -27,7 +27,7 @@ Redmine::WikiFormatting::Macros.register do
         if attachment
             file_url = url_for(:only_path => false, :controller => 'attachments', :action => 'download', :id => attachment, :filename => attachment.filename)
         else
-            file_url = args[0].gsub(/<.*?>/, '').gsub(/&lt;.*&gt;/,'')
+          file_url = args[0].gsub(/<.*?>/, '').gsub(/&lt;.*&gt;/,'') if args.length() > 0
         end
 
         case file_url
